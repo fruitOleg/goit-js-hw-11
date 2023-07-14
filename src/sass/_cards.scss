@@ -1,0 +1,84 @@
+* {
+  box-sizing: border-box;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 15px;
+}
+
+.photo-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-basis: calc((100% - 60px) / 4);
+  border-radius: 10px;
+}
+
+.photo-link {
+  width: 100%;
+  height: 100%;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 15px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+
+  color: #151427;
+}
+
+.load-more {
+  display: none;
+  margin: 0 auto;
+  margin-bottom: 50px;
+  background-color: #2907eb;
+  color: #fff;
+  padding: 10px;
+}
+
+.is-hidden {
+  display: block;
+}
+
+.stt {
+  display: none;
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  width: 50px;
+  height: 50px;
+  line-height: 0;
+  text-indent: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  background: #fff;
+  border-color: #2907eb;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.stt::before {
+  position: absolute;
+  display: block;
+  text-indent: 0;
+  left: -2px;
+  top: -3px;
+  content: url('https://img.icons8.com/sf-ultralight/50/000000/chevron-up.png');
+}
