@@ -2,6 +2,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import GetImageAPI from './js/images.js';
+import { createGalleryCard } from './js/create-image';
 
 const getImageApiInstance = new GetImageAPI();
 const lightboxGallery = new SimpleLightbox('.gallery a');
@@ -9,15 +10,17 @@ const lightboxGallery = new SimpleLightbox('.gallery a');
 const searchInputFormEl = document.querySelector('.search-form');
 const createGalleryEl = document.querySelector('.gallery');
 const loadMoreBtnEl = document.querySelector('.load-more');
+const scrollToTop = document.querySelector('.stt');
 
 searchInputFormEl.addEventListener('submit', handleSearchBtn);
+loadMoreBtnEl.addEventListener('click', handleLoadMoreBtnClick);
 
-function handleSearchBtn(event) {
+async function handleSearchBtn(event) {
   event.preventDefault();
 
-  loadMoreBtnEl.classList.remove('is-hidden');
-
   getImageApiInstance.query = event.target.elements.searchQuery.value.trim();
+
+  loadMoreBtnEl.classList.remove('is-hidden');
 
   if (getImageApiInstance.query === '') {
     Notify.failure(
@@ -30,86 +33,61 @@ function handleSearchBtn(event) {
 
   createGalleryEl.innerHTML = '';
 
-  getImageApiInstance
-    .getImage()
-    .then(data => {
-      if (data.hits.length === 0) {
-        Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-        loadMoreBtnEl.classList.remove('is-hidden');
-        return;
-      }
+  const data = await getImageApiInstance.getImage();
 
-      Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  try {
+    if (data.hits.length === 0) {
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      loadMoreBtnEl.classList.remove('is-hidden');
+      return;
+    }
 
-      const markup = createGalleryCard(data.hits);
-      createGalleryEl.insertAdjacentHTML('beforeend', markup);
-      lightboxGallery.refresh();
+    Notify.success(`Hooray! We found ${data.totalHits} images.`);
+
+    const markup = createGalleryCard(data.hits);
+    createGalleryEl.insertAdjacentHTML('beforeend', markup);
+    lightboxGallery.refresh();
+
+    if (data.totalHits >= getImageApiInstance.perPage) {
       loadMoreBtnEl.classList.add('is-hidden');
-    })
-    .catch(() => {
-      Notify.failure('Bad request');
-    });
+    } else {
+      loadMoreBtnEl.classList.remove('is-hidden');
+    }
+  } catch {
+    Notify.failure('Bad request');
+  }
 }
 
-loadMoreBtnEl.addEventListener('click', handleLoadMoreBtnClick);
-
-function handleLoadMoreBtnClick() {
+async function handleLoadMoreBtnClick() {
   getImageApiInstance.incrementPage();
-  getImageApiInstance
-    .getImage()
-    .then(data => {
-      if (getImageApiInstance.page >= data.totalHits / 40) {
-        Notify.failure(
-          "We're sorry, but you've reached the end of search results."
-        );
+  const data = await getImageApiInstance.getImage();
+  try {
+    if (getImageApiInstance.page >= data.totalHits / 40) {
+      Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
 
-        loadMoreBtnEl.classList.remove('is-hidden');
-        return;
-      }
+      loadMoreBtnEl.classList.remove('is-hidden');
+    }
 
-      markup = createGalleryCard(data.hits);
-      createGalleryEl.insertAdjacentHTML('beforeend', markup);
-      lightboxGallery.refresh();
-    })
-    .catch(() => {});
+    const markup = createGalleryCard(data.hits);
+    createGalleryEl.insertAdjacentHTML('beforeend', markup);
+    lightboxGallery.refresh();
+  } catch {
+    Notify.failure('Bad request end line');
+  }
 }
 
-function createGalleryCard(markup) {
-  return markup
-    .map(
-      ({
-        webformatURL,
-        largeImageURL,
-        tags,
-        likes,
-        views,
-        comments,
-        downloads,
-      }) => {
-        return `
-  <div class="photo-card">
-  <a class="photo-link" href="${largeImageURL}">
-  <img class="photo" src="${webformatURL}" alt="${tags}" loading="lazy" />
-  </a>
-  <div class="info">
-  <p class="info-item">
-   <b>Likes</b>${likes}
-    </p>
-  <p class="info-item">
-    <b>Views</b>${views}
-  </p>
-  <p class="info-item">
-   <b>Comments</b>${comments}
-  </p>
-  <p class="info-item">
-   <b>Downloads</b>${downloads}
-  </p>
-    </div>
-  </a>
-  </div>`;
-      }
-    )
-    .join('');
-}
+document.addEventListener('scroll', event => {
+  if (window.scrollY >= 500) {
+    scrollToTop.style.display = 'block';
+  } else {
+    scrollToTop.style.display = 'none';
+  }
+});
+
+scrollToTop.addEventListener('click', event => {
+  window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
+});
