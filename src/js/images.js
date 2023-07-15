@@ -14,11 +14,11 @@ export default class GetImageAPI {
       params: {
         key: '38200365-78da0163b7645a21191d777ec',
         q: `${this.searchQuery}`,
-        imageType: 'photo',
+        image_type: 'photo',
         orientation: 'horizontal',
         safesearch: true,
         page: `${this.page}`,
-        perPage: `${this.perPage}`,
+        per_page: `${this.perPage}`,
       },
       headers: {
         'Content-Type': 'application/json',
