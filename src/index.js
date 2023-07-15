@@ -80,7 +80,7 @@ async function handleLoadMoreBtnClick() {
   }
 }
 
-document.addEventListener('scroll', event => {
+document.addEventListener('scroll', () => {
   if (window.scrollY >= 500) {
     scrollToTop.style.display = 'block';
   } else {
@@ -88,6 +88,6 @@ document.addEventListener('scroll', event => {
   }
 });
 
-scrollToTop.addEventListener('click', event => {
+scrollToTop.addEventListener('click', () => {
   window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
 });
