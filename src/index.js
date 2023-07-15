@@ -10,7 +10,6 @@ const lightboxGallery = new SimpleLightbox('.gallery a');
 const searchInputFormEl = document.querySelector('.search-form');
 const createGalleryEl = document.querySelector('.gallery');
 const loadMoreBtnEl = document.querySelector('.load-more');
-const scrollToTop = document.querySelector('.stt');
 
 searchInputFormEl.addEventListener('submit', handleSearchBtn);
 loadMoreBtnEl.addEventListener('click', handleLoadMoreBtnClick);
@@ -79,15 +78,3 @@ async function handleLoadMoreBtnClick() {
     Notify.failure('Bad request end line');
   }
 }
-
-document.addEventListener('scroll', () => {
-  if (window.scrollY >= 500) {
-    scrollToTop.style.display = 'block';
-  } else {
-    scrollToTop.style.display = 'none';
-  }
-});
-
-scrollToTop.addEventListener('click', () => {
-  window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
-});
