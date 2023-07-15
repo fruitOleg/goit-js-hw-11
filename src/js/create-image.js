@@ -1,5 +1,5 @@
-export function createGalleryCard(murkup) {
-  return murkup
+export function createGalleryCard(markup) {
+  return markup
     .map(
       ({
         webformatURL,

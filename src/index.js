@@ -3,34 +3,34 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import GetImageAPI from './js/images.js';
 
-const getimageApiInstance = new GetImageAPI();
+const getImageApiInstance = new GetImageAPI();
 const lightboxGallery = new SimpleLightbox('.gallery a');
 
 const searchInputFormEl = document.querySelector('.search-form');
 const createGalleryEl = document.querySelector('.gallery');
 const loadMoreBtnEl = document.querySelector('.load-more');
 
-searchInputFormEl.addEventListener('submit', heandleSearchBtn);
+searchInputFormEl.addEventListener('submit', handleSearchBtn);
 
-function heandleSearchBtn(event) {
+function handleSearchBtn(event) {
   event.preventDefault();
 
   loadMoreBtnEl.classList.remove('is-hidden');
 
-  getimageApiInstance.query = event.target.elements.searchQuery.value.trim();
+  getImageApiInstance.query = event.target.elements.searchQuery.value.trim();
 
-  if (getimageApiInstance.query === '') {
+  if (getImageApiInstance.query === '') {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
     return;
   }
 
-  getimageApiInstance.resetPage();
+  getImageApiInstance.resetPage();
 
   createGalleryEl.innerHTML = '';
 
-  getimageApiInstance
+  getImageApiInstance
     .getImage()
     .then(data => {
       if (data.hits.length === 0) {
@@ -43,8 +43,8 @@ function heandleSearchBtn(event) {
 
       Notify.success(`Hooray! We found ${data.totalHits} images.`);
 
-      const murkup = createGalleryCard(data.hits);
-      createGalleryEl.insertAdjacentHTML('beforeend', murkup);
+      const markup = createGalleryCard(data.hits);
+      createGalleryEl.insertAdjacentHTML('beforeend', markup);
       lightboxGallery.refresh();
       loadMoreBtnEl.classList.add('is-hidden');
     })
@@ -56,11 +56,11 @@ function heandleSearchBtn(event) {
 loadMoreBtnEl.addEventListener('click', handleLoadMoreBtnClick);
 
 function handleLoadMoreBtnClick() {
-  getimageApiInstance.incrementPage();
-  getimageApiInstance
+  getImageApiInstance.incrementPage();
+  getImageApiInstance
     .getImage()
     .then(data => {
-      if (getimageApiInstance.page >= data.totalHits / 40) {
+      if (getImageApiInstance.page >= data.totalHits / 40) {
         Notify.failure(
           "We're sorry, but you've reached the end of search results."
         );
@@ -69,15 +69,15 @@ function handleLoadMoreBtnClick() {
         return;
       }
 
-      murkup = createGalleryCard(data.hits);
-      createGalleryEl.insertAdjacentHTML('beforeend', murkup);
+      markup = createGalleryCard(data.hits);
+      createGalleryEl.insertAdjacentHTML('beforeend', markup);
       lightboxGallery.refresh();
     })
     .catch(() => {});
 }
 
-function createGalleryCard(murkup) {
-  return murkup
+function createGalleryCard(markup) {
+  return markup
     .map(
       ({
         webformatURL,
